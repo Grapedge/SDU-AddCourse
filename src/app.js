@@ -51,8 +51,12 @@ const app = async config => {
       console.log('登录成功');
       // 获取课程信息
       const { course } = config;
-      let queryKCount = 0;
-      let queryCount = 0;
+      let queryKCount = {};
+      let queryCount = {};
+      for (const { kch, kxh } of course) {
+        queryCount[kch + kxh] = 0;
+        queryKCount[kch + kxh] = 0;
+      }
       // 如果没有选完课
       while (course.length > 0) {
         for (const c of course) {
@@ -73,14 +77,15 @@ const app = async config => {
               course.splice(course.indexOf(c), 1);
             }
           } else {
-            if (queryCount % 1000 === 0) {
-              queryCount = 0;
-              ++queryKCount;
+            const key = kch + kxh;
+            if (queryCount[key] % 1000 === 0) {
+              queryCount[key] = 0;
+              ++queryKCount[key];
               console.log(
-                `第${queryKCount}K次查询【${data[1].KCM}】课余量不足，正在持续查询中...`
+                `第${queryKCount[key]}K次查询【${data[1].KCM}】课余量不足，正在持续查询中...`
               );
             }
-            ++queryCount;
+            ++queryCount[key];
           }
         }
       }
